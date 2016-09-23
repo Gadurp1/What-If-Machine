@@ -34,15 +34,16 @@ class StockController extends Controller
   public function show($ticker)
   {
     $stock=Stock::where('ticker',$ticker)->first();
-
     $history=DailyFeed::where('stock_id',$stock->ticker)->orderBy('date','ASC')->pluck('close','date');
-
     $max=DailyFeed::where('stock_id',$stock->ticker)->max('high');
-
     $start=DailyFeed::where('stock_id',$stock->ticker)->orderBy('date','ASC')->first();
 
+    // Calculate Max Profit - Assumes $1000 initial investment
+    $shares_purchased=(1000/$start->open);
+    $max_profit=$shares_purchased*$max - 1000;
+
     return view('future.show',
-      compact('stock','history','max','start')
+      compact('stock','history','max','start','max_profit')
     );
   }
 }
